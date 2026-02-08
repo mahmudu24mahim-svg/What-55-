@@ -193,7 +193,6 @@ async def daily_bonus(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if is_blocked(user.id): return
     
     if db.claim_bonus(user.id):
-        # <<< পরিবর্তন: সফলতার মেসেজ 5 থেকে 3 কয়েন করা হয়েছে
         await update.message.reply_text(f"🎉 You received 3 bonus coins.\n\n💰 Your new balance is {db.get_user_coins(user.id)} coins.")
     else:
         await update.message.reply_text(f"❌ You have already claimed your daily bonus. Try again after 12 AM BD Time.")
@@ -209,7 +208,6 @@ async def redeem_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db.add_coins(user.id, 5)
         await update.message.reply_text(f"✅ Code redeemed! **5 coins** added.\n\n💰 Your new balance is {db.get_user_coins(user.id)} coins.", parse_mode=ParseMode.MARKDOWN)
         
-        # <<< নতুন সংযোজন: রিডিম কোড ব্যবহারের লগ পাঠানো হবে
         try:
             user_mention = f"<a href='tg://user?id={user.id}'>{html.escape(user.full_name)}</a> (@{user.username or 'N/A'})"
             log_message = (
@@ -292,7 +290,8 @@ async def admin_panel(update, context):
         "`/userstats` - View all user stats.\n"
         "`/broadcast <msg>` - Send a message to all users.\n"
         "`/block <id>` - Block a user.\n"
-        "`/unblock <id>` - Unblock a user."
+        "`/unblock <id>` - Unblock a user.\n"
+        "`/addpoints <user_id> <amount>` - Add coins to a user."
     )
     if is_owner(update.effective_user.id):
         text += (
@@ -309,7 +308,6 @@ async def generate_code_command(update: Update, context: ContextTypes.DEFAULT_TY
     await update.message.reply_text(f"✨ **5 new redeem codes** generated:\n\n{codes_text}\n\nEach is worth **5 coins**.", parse_mode=ParseMode.MARKDOWN)
 
 # --- Other Admin Commands ---
-# (Adding them back to ensure the file is complete)
 async def userstats(update, context):
     if not is_admin(update.effective_user.id): return
     user_data = db.load_json(db.USER_DATA_FILE, {})
