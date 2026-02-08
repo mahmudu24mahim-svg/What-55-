@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 # --- Bot Configuration ---
 TOKEN = "8522171985:AAFJ_8GdyTcXJ97SfAG1yXa-7oJ3hqopx6w" # আপনার আসল টোকেন দিন
-LOG_CHANNEL_ID = -1003113843933
+LOG_CHANNEL_ID = -1003863682790
 OWNER_ID = 7276206449
 REQUIRED_CHANNEL = "@mbtcyber"
 
