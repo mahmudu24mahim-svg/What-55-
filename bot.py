@@ -29,10 +29,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # --- Bot Configuration ---
-TOKEN = "8495166319:AAF_8B_TVlFIrkKoh6yvDfrQxMvrrDHlFNU" # আপনার আসল টোকেন দিন
-LOG_CHANNEL_ID = -1003053960610
-OWNER_ID = 1692540458
-REQUIRED_CHANNEL = "@smsbomberupdate"
+TOKEN = "8522171985:AAFJ_8GdyTcXJ97SfAG1yXa-7oJ3hqopx6w" # আপনার আসল টোকেন দিন
+LOG_CHANNEL_ID = -1003113843933
+OWNER_ID = 7276206449
+REQUIRED_CHANNEL = "@mbtcyber"
 
 # --- Helper Functions ---
 def is_owner(user_id): return user_id == OWNER_ID
