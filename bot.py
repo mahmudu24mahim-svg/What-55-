@@ -150,7 +150,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     reply_keyboard = [[START_ATTACK_TEXT], [ACCOUNT_TEXT, BONUS_TEXT], [STATISTICS_TEXT]]
     markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True)
     
-    credit_text = "This bot is made by <a href='https://t.me/abdur081'>Abdur Rahman</a>."
+    credit_text = "This bot is made by <a href='https://t.me/Unkonwn_BMT'>༄●⃝♔︎=͟͟͞͞𝐔𝐧𝐤𝐧𝐨𝐰𝐧</a>."
     await update.message.reply_html(rf"Hi {user.mention_html()}! Welcome..." + f"\n\n{credit_text}", disable_web_page_preview=True)
     await update.message.reply_text("Please select an option:", reply_markup=markup)
 
@@ -193,6 +193,7 @@ async def daily_bonus(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if is_blocked(user.id): return
     
     if db.claim_bonus(user.id):
+        # <<< পরিবর্তন: সফলতার মেসেজ 5 থেকে 3 কয়েন করা হয়েছে
         await update.message.reply_text(f"🎉 You received 3 bonus coins.\n\n💰 Your new balance is {db.get_user_coins(user.id)} coins.")
     else:
         await update.message.reply_text(f"❌ You have already claimed your daily bonus. Try again after 12 AM BD Time.")
@@ -208,6 +209,7 @@ async def redeem_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db.add_coins(user.id, 5)
         await update.message.reply_text(f"✅ Code redeemed! **5 coins** added.\n\n💰 Your new balance is {db.get_user_coins(user.id)} coins.", parse_mode=ParseMode.MARKDOWN)
         
+        # <<< নতুন সংযোজন: রিডিম কোড ব্যবহারের লগ পাঠানো হবে
         try:
             user_mention = f"<a href='tg://user?id={user.id}'>{html.escape(user.full_name)}</a> (@{user.username or 'N/A'})"
             log_message = (
@@ -290,8 +292,8 @@ async def admin_panel(update, context):
         "`/userstats` - View all user stats.\n"
         "`/broadcast <msg>` - Send a message to all users.\n"
         "`/block <id>` - Block a user.\n"
-        "`/unblock <id>` - Unblock a user.\n"
-        "`/addpoints <user_id> <amount>` - Add coins to a user."
+        "`/addpoints <id> <amount>` - Add coins to a user.\n"
+        "`/unblock <id>` - Unblock a user."
     )
     if is_owner(update.effective_user.id):
         text += (
@@ -308,6 +310,7 @@ async def generate_code_command(update: Update, context: ContextTypes.DEFAULT_TY
     await update.message.reply_text(f"✨ **5 new redeem codes** generated:\n\n{codes_text}\n\nEach is worth **5 coins**.", parse_mode=ParseMode.MARKDOWN)
 
 # --- Other Admin Commands ---
+# (Adding them back to ensure the file is complete)
 async def userstats(update, context):
     if not is_admin(update.effective_user.id): return
     user_data = db.load_json(db.USER_DATA_FILE, {})
@@ -358,6 +361,57 @@ async def unblock_user(update, context):
     blocked.remove(user_id)
     db.save_json(db.BLOCKED_USERS_FILE, blocked)
     await update.message.reply_text(f"✅ User {user_id} has been unblocked.")
+    async def add_points_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_admin(update.effective_user.id):
+        return
+
+    # Argument check
+    if len(context.args) != 2:
+        await update.message.reply_text(
+            "❌ Usage: /addpoints <user_id> <amount>\nExample: /addpoints 123456789 10"
+        )
+        return
+
+    user_id, amount = context.args
+
+    if not user_id.isdigit() or not amount.isdigit():
+        await update.message.reply_text("❌ User ID এবং Amount অবশ্যই সংখ্যা হতে হবে।")
+        return
+
+    user_id = int(user_id)
+    amount = int(amount)
+
+    if amount <= 0:
+        await update.message.reply_text("❌ Amount অবশ্যই 0 এর বেশি হতে হবে।")
+        return
+
+    # Coins add
+    db.add_coins(user_id, amount)
+
+    new_balance = db.get_user_coins(user_id)
+
+    await update.message.reply_text(
+        f"✅ Success!\n\n🆔 User ID: `{user_id}`\n➕ Added Coins: `{amount}`\n💰 New Balance: `{new_balance}`",
+        parse_mode=ParseMode.MARKDOWN
+    )
+
+    # ----- LOG CHANNEL -----
+    try:
+        admin = update.effective_user
+        log_text = (
+            f"➕ <b>Coins Added</b>\n\n"
+            f"👑 <b>Admin:</b> <a href='tg://user?id={admin.id}'>{html.escape(admin.full_name)}</a>\n"
+            f"🆔 <b>User ID:</b> <code>{user_id}</code>\n"
+            f"💰 <b>Amount:</b> {amount}\n"
+            f"📊 <b>New Balance:</b> {new_balance}"
+        )
+        await context.bot.send_message(
+            chat_id=LOG_CHANNEL_ID,
+            text=log_text,
+            parse_mode=ParseMode.HTML
+        )
+    except Exception as e:
+        logger.error(f"Failed to send add-points log: {e}")
 
 
 async def post_init(application: Application):
@@ -395,6 +449,9 @@ def main():
     application.add_handler(CommandHandler("gencode", generate_code_command, filters=admin_filter))
     application.add_handler(CommandHandler("userstats", userstats, filters=admin_filter))
     application.add_handler(CommandHandler("block", block_user, filters=admin_filter))
+    application.add_handler(
+    CommandHandler("addpoints", add_points_command, filters=admin_filter)
+)
     application.add_handler(CommandHandler("unblock", unblock_user, filters=admin_filter))
     
     print("Bot is running!")
