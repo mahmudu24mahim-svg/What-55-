@@ -29,7 +29,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # --- Bot Configuration ---
-TOKEN = "8522171985:AAFJ_8GdyTcXJ97SfAG1yXa-7oJ3hqopx6w" # আপনার আসল টোকেন দিন
+TOKEN = "8218346974:AAGG7EZN7HNPvzkqeY1w6GbjJZJ1OANhXmY" # আপনার আসল টোকেন দিন
 LOG_CHANNEL_ID = -1003863682790
 OWNER_ID = 7276206449
 REQUIRED_CHANNEL = "@mbtcyber"
@@ -150,7 +150,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     reply_keyboard = [[START_ATTACK_TEXT], [ACCOUNT_TEXT, BONUS_TEXT], [STATISTICS_TEXT]]
     markup = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True)
     
-    credit_text = "This bot is made by <a href='https://t.me/Unkonwn_BMT'>༄●⃝♔︎=͟͟͞͞𝐔𝐧𝐤𝐧𝐨𝐰𝐧</a>."
+    credit_text = "This bot is made by <a href='https://t.me/Unkonwn_BMT'>Unknown</a>."
     await update.message.reply_html(rf"Hi {user.mention_html()}! Welcome..." + f"\n\n{credit_text}", disable_web_page_preview=True)
     await update.message.reply_text("Please select an option:", reply_markup=markup)
 
