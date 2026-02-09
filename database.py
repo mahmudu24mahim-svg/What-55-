@@ -50,6 +50,7 @@ def initialize_files():
     load_json(APIS_FILE, [])
     load_json(STATS_FILE, {"total_users": 0, "total_sms_sent": 0})
     load_json(USERS_FILE, {})
+    load_json(USER_DATA_FILE, {})
     load_json(ADMINS_FILE, [])
     load_json(BLOCKED_USERS_FILE, [])
     load_json(BONUS_CLAIMS_FILE, {})
@@ -153,6 +154,25 @@ def claim_bonus(user_id):
     claims = load_json(BONUS_CLAIMS_FILE, {})
     claims[str(user_id)] = datetime.now(BD_TZ).isoformat()
     save_json(BONUS_CLAIMS_FILE, claims)
+    return True
+def add_points_admin(user_id, amount):
+    """
+    Admin দ্বারা user কে coin/points add করার জন্য
+    """
+    if amount <= 0:
+        return False
+
+    user_data = load_json(USER_DATA_FILE, {})
+    uid = str(user_id)
+
+    if uid not in user_data:
+        user_data[uid] = {
+            "sms_sent": 0,
+            "coins": 0
+        }
+
+    user_data[uid]["coins"] += amount
+    save_json(USER_DATA_FILE, user_data)
     return True
 
 def get_next_bonus_time():
